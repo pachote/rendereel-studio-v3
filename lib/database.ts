@@ -19,38 +19,6 @@ export interface Render {
   updatedAt: string;
 }
 
-export interface Model {
-  id: string;
-  name: string;
-  type: string;
-  provider: string;
-  description?: string;
-  category?: string;
-  version?: string;
-  baseModel?: string;
-  size?: string;
-  downloadCount?: number;
-  rating?: number;
-  tags?: string[];
-  nsfw?: boolean;
-  commercial?: boolean;
-  source?: string;
-}
-
-export interface LoRA {
-  id: string;
-  name: string;
-  type: string;
-  description?: string;
-  strength?: number;
-  category?: string;
-  tags?: string[];
-  downloadCount?: number;
-  rating?: number;
-  baseModel?: string;
-  source?: string;
-}
-
 // In-memory storage
 export const db = {
   projects: [] as Project[],
