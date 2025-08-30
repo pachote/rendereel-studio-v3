@@ -42,12 +42,12 @@ interface ReplicateModel {
   paper_url: string;
   license_url: string;
   cover_image_url: string;
-  default_example: any;
+  default_example: unknown;
   latest_version: {
     id: string;
     created_at: string;
     cog_version: string;
-    openapi_schema: any;
+    openapi_schema: unknown;
   };
 }
 
@@ -189,14 +189,11 @@ export class ReplicateAPI {
       )
       .map(model => {
         let category = 'general';
-        let type = 'sd15';
         
         if (model.name.toLowerCase().includes('flux')) {
           category = 'flux';
-          type = 'flux';
         } else if (model.name.toLowerCase().includes('sdxl')) {
           category = 'sdxl';
-          type = 'sdxl';
         }
 
         return {
@@ -266,7 +263,7 @@ export class KlingAPI {
     ];
   }
 
-  private mapKlingModelsToInternal(klingModels: any[]): Model[] {
+  private mapKlingModelsToInternal(klingModels: Array<{ id?: string; name?: string; description?: string; version?: string }>): Model[] {
     return klingModels.map((model, index) => ({
       id: `kling-${model.id || index}`,
       name: model.name || `Kling Model ${index + 1}`,

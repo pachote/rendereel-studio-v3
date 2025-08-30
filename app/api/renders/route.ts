@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import type { Render } from '@/lib/api-client';
 
 // In-memory storage for development
-let renders: any[] = [];
+const renders: Render[] = [];
 
 export async function GET() {
   return NextResponse.json({
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
       success: true,
       data: newRender
     }, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({
       success: false,
       error: 'Failed to create render'
