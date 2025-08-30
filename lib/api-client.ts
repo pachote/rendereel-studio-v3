@@ -1,6 +1,5 @@
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.NEXT_PUBLIC_API_URL || ''
-  : 'http://localhost:3001';
+// Use relative API base by default so Next.js app endpoints are called locally and on Vercel
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 export interface Project {
   id: string;

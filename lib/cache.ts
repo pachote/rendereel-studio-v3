@@ -1,24 +1,16 @@
 import { Model, LoRA } from './api-client';
+import { kv as kvClient } from '@vercel/kv';
+import { neon } from '@neondatabase/serverless';
 
-let kv: any = null;
-let sql: any = null;
+// Detect availability from provided env vars (Vercel KV uses KV_REST_* vars)
+const isKvAvailable = Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+const isDbAvailable = Boolean(process.env.DATABASE_URL);
 
-try {
-  if (process.env.VERCEL_KV_URL) {
-    kv = require('@vercel/kv').kv;
-  }
-} catch (error) {
-  console.warn('Vercel KV not available:', error);
-}
-
-try {
-  if (process.env.DATABASE_URL) {
-    const { neon } = require('@neondatabase/serverless');
-    sql = neon(process.env.DATABASE_URL);
-  }
-} catch (error) {
-  console.warn('Neon database not available:', error);
-}
+// Initialize clients conditionally while keeping strong typing
+const kv = isKvAvailable ? kvClient : null;
+const sql: (ReturnType<typeof neon>) | null = isDbAvailable && process.env.DATABASE_URL
+  ? neon(process.env.DATABASE_URL)
+  : null;
 
 export class CacheService {
   private static readonly CACHE_TTL = 3600;
@@ -27,20 +19,20 @@ export class CacheService {
 
   static async getModels(): Promise<Model[] | null> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        const cached = await kv.get(this.MODELS_CACHE_KEY);
-        if (cached) return cached;
+      if (kv && isKvAvailable) {
+        const cached = await kv.get<Model[]>(this.MODELS_CACHE_KEY);
+        if (cached) return cached as Model[];
       }
 
-      if (sql && process.env.DATABASE_URL) {
+      if (sql && isDbAvailable) {
         const dbModels = await sql`
           SELECT * FROM cached_models 
           WHERE updated_at > NOW() - INTERVAL '1 hour'
           ORDER BY updated_at DESC
         `;
         
-        if (dbModels.length > 0) {
-          return dbModels.map((row: any) => JSON.parse(row.data));
+        if ((dbModels as unknown[]).length > 0) {
+          return (dbModels as Array<{ data: string }>).map((row) => JSON.parse(row.data) as Model[]).flat();
         }
       }
 
@@ -53,11 +45,11 @@ export class CacheService {
 
   static async setModels(models: Model[]): Promise<void> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        await kv.setex(this.MODELS_CACHE_KEY, this.CACHE_TTL, models);
+      if (kv && isKvAvailable) {
+        await kv.set(this.MODELS_CACHE_KEY, models, { ex: this.CACHE_TTL });
       }
 
-      if (sql && process.env.DATABASE_URL) {
+      if (sql && isDbAvailable) {
         await sql`
           INSERT INTO cached_models (key, data, updated_at)
           VALUES (${this.MODELS_CACHE_KEY}, ${JSON.stringify(models)}, NOW())
@@ -72,20 +64,20 @@ export class CacheService {
 
   static async getLoRAs(): Promise<LoRA[] | null> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        const cached = await kv.get(this.LORAS_CACHE_KEY);
-        if (cached) return cached;
+      if (kv && isKvAvailable) {
+        const cached = await kv.get<LoRA[]>(this.LORAS_CACHE_KEY);
+        if (cached) return cached as LoRA[];
       }
 
-      if (sql && process.env.DATABASE_URL) {
+      if (sql && isDbAvailable) {
         const dbLoRAs = await sql`
           SELECT * FROM cached_loras 
           WHERE updated_at > NOW() - INTERVAL '1 hour'
           ORDER BY updated_at DESC
         `;
         
-        if (dbLoRAs.length > 0) {
-          return dbLoRAs.map((row: any) => JSON.parse(row.data));
+        if ((dbLoRAs as unknown[]).length > 0) {
+          return (dbLoRAs as Array<{ data: string }>).map((row) => JSON.parse(row.data) as LoRA[]).flat();
         }
       }
 
@@ -98,11 +90,11 @@ export class CacheService {
 
   static async setLoRAs(loras: LoRA[]): Promise<void> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        await kv.setex(this.LORAS_CACHE_KEY, this.CACHE_TTL, loras);
+      if (kv && isKvAvailable) {
+        await kv.set(this.LORAS_CACHE_KEY, loras, { ex: this.CACHE_TTL });
       }
 
-      if (sql && process.env.DATABASE_URL) {
+      if (sql && isDbAvailable) {
         await sql`
           INSERT INTO cached_loras (key, data, updated_at)
           VALUES (${this.LORAS_CACHE_KEY}, ${JSON.stringify(loras)}, NOW())
@@ -117,7 +109,7 @@ export class CacheService {
 
   static async initializeTables(): Promise<void> {
     try {
-      if (sql && process.env.DATABASE_URL) {
+      if (sql && isDbAvailable) {
         await sql`
           CREATE TABLE IF NOT EXISTS cached_models (
             key VARCHAR(255) PRIMARY KEY,
