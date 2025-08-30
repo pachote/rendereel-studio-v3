@@ -1,4 +1,4 @@
-import { Model, LoRA } from './database';
+import { Model, LoRA } from './api-client';
 
 let kv: any = null;
 let sql: any = null;

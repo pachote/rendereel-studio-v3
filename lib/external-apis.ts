@@ -1,4 +1,4 @@
-import { Model, LoRA } from './database';
+import { Model, LoRA } from './api-client';
 
 interface CivitaiModel {
   id: number;
@@ -218,15 +218,7 @@ export class ReplicateAPI {
           provider: 'Replicate',
           description: model.description || '',
           category,
-          version: model.latest_version?.id?.substring(0, 8) || '1.0',
-          baseModel: type.toUpperCase(),
-          size: 'Unknown',
-          downloadCount: 0,
-          rating: 0,
-          tags: [type, 'replicate'],
-          nsfw: false,
-          commercial: true,
-          source: 'replicate'
+          version: model.latest_version?.id?.substring(0, 8) || '1.0'
         };
       });
   }
@@ -272,15 +264,7 @@ export class KlingAPI {
         provider: 'Kling',
         description: 'Advanced video generation model',
         category: 'video',
-        version: '1.0',
-        baseModel: 'Kling',
-        size: '12GB',
-        downloadCount: 50000,
-        rating: 4.8,
-        tags: ['video', 'ai', 'generation'],
-        nsfw: false,
-        commercial: true,
-        source: 'kling'
+        version: '1.0'
       },
       {
         id: 'kling-v1.5',
@@ -289,15 +273,7 @@ export class KlingAPI {
         provider: 'Kling',
         description: 'Enhanced video generation with better quality',
         category: 'video',
-        version: '1.5',
-        baseModel: 'Kling',
-        size: '15GB',
-        downloadCount: 75000,
-        rating: 4.9,
-        tags: ['video', 'ai', 'generation', 'enhanced'],
-        nsfw: false,
-        commercial: true,
-        source: 'kling'
+        version: '1.5'
       }
     ];
   }
@@ -310,15 +286,7 @@ export class KlingAPI {
       provider: 'Kling',
       description: model.description || 'Kling AI video generation model',
       category: 'video',
-      version: model.version || '1.0',
-      baseModel: 'Kling',
-      size: model.size || 'Unknown',
-      downloadCount: model.downloadCount || 0,
-      rating: model.rating || 4.5,
-      tags: ['video', 'kling', 'ai'],
-      nsfw: false,
-      commercial: true,
-      source: 'kling'
+      version: model.version || '1.0'
     }));
   }
 }
