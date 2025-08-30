@@ -11,7 +11,7 @@ export async function GET() {
     
     if (!loras) {
       const civitaiAPI = new CivitaiAPI();
-      loras = await civitaiAPI.getLoRAs(20);
+      loras = await civitaiAPI.getLoRAs(5000);
       await CacheService.setLoRAs(loras);
     }
 

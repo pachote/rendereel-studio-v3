@@ -55,50 +55,66 @@ export class CivitaiAPI {
   private baseUrl = 'https://civitai.com/api/v1';
   private apiKey = process.env.CIVITAI_API_KEY;
 
-  async getModels(limit = 20, types = 'Checkpoint'): Promise<Model[]> {
+  async getModels(limit = 2000, types = 'Checkpoint'): Promise<Model[]> {
     try {
-      const url = `${this.baseUrl}/models?limit=${limit}&types=${types}`;
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      
       if (this.apiKey) {
         headers['Authorization'] = `Bearer ${this.apiKey}`;
       }
 
-      const response = await fetch(url, { headers });
-      
-      if (!response.ok) {
-        throw new Error(`Civitai API error: ${response.status}`);
+      const aggregated: any[] = [];
+      let page = 1;
+      const pageLimit = 100;
+
+      while (aggregated.length < limit) {
+        const url = `${this.baseUrl}/models?limit=${pageLimit}&types=${types}&page=${page}`;
+        const response = await fetch(url, { headers });
+        if (!response.ok) {
+          throw new Error(`Civitai API error: ${response.status}`);
+        }
+        const data = await response.json();
+        const items = data.items || [];
+        if (items.length === 0) break;
+        aggregated.push(...items);
+        page += 1;
       }
 
-      const data = await response.json();
-      return this.mapCivitaiModelsToInternal(data.items || []);
+      return this.mapCivitaiModelsToInternal(aggregated.slice(0, limit));
     } catch (error) {
       console.error('Error fetching Civitai models:', error);
       return [];
     }
   }
 
-  async getLoRAs(limit = 20): Promise<LoRA[]> {
+  async getLoRAs(limit = 4000): Promise<LoRA[]> {
     try {
-      const url = `${this.baseUrl}/models?limit=${limit}&types=LORA`;
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      
       if (this.apiKey) {
         headers['Authorization'] = `Bearer ${this.apiKey}`;
       }
 
-      const response = await fetch(url, { headers });
-      
-      if (!response.ok) {
-        throw new Error(`Civitai API error: ${response.status}`);
+      const aggregated: any[] = [];
+      let page = 1;
+      const pageLimit = 100;
+
+      while (aggregated.length < limit) {
+        const url = `${this.baseUrl}/models?limit=${pageLimit}&types=LORA&page=${page}`;
+        const response = await fetch(url, { headers });
+        if (!response.ok) {
+          throw new Error(`Civitai API error: ${response.status}`);
+        }
+        const data = await response.json();
+        const items = data.items || [];
+        if (items.length === 0) break;
+        aggregated.push(...items);
+        page += 1;
       }
 
-      const data = await response.json();
-      return this.mapCivitaiLoRAsToInternal(data.items || []);
+      return this.mapCivitaiLoRAsToInternal(aggregated.slice(0, limit));
     } catch (error) {
       console.error('Error fetching Civitai LoRAs:', error);
       return [];

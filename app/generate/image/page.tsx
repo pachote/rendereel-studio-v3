@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { apiClient, Model, LoRA } from "../../../lib/api-client";
+import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 
 export default function GenerateImage() {
   const [models, setModels] = useState<Model[]>([]);
@@ -20,14 +21,9 @@ export default function GenerateImage() {
           apiClient.getModels(),
           apiClient.getLoRAs()
         ]);
-        
         const imageModels = modelsData.filter(model => model.type === 'image');
         setModels(imageModels);
         setLoRAs(lorasData);
-        
-        if (imageModels.length > 0) {
-          setSelectedModel(imageModels[0].id);
-        }
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -38,15 +34,42 @@ export default function GenerateImage() {
     fetchData();
   }, []);
 
-  const filteredModels = models.filter(model =>
+  // Load persisted selections after data loads
+  useEffect(() => {
+    try {
+      const persistedModel = localStorage.getItem('image_selected_model');
+      const persistedLoRAs = JSON.parse(localStorage.getItem('image_selected_loras') || '[]');
+      if (persistedModel) setSelectedModel(persistedModel);
+      if (Array.isArray(persistedLoRAs)) setSelectedLoRAs(persistedLoRAs);
+      if (!persistedModel && models.length > 0) setSelectedModel(models[0].id);
+    } catch (e) {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [models.length, loras.length]);
+
+  // Persist selections
+  useEffect(() => {
+    try {
+      if (selectedModel) localStorage.setItem('image_selected_model', selectedModel);
+    } catch {}
+  }, [selectedModel]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('image_selected_loras', JSON.stringify(selectedLoRAs));
+    } catch {}
+  }, [selectedLoRAs]);
+
+  const filteredModels = useMemo(() => models.filter(model =>
     model.name.toLowerCase().includes(modelSearch.toLowerCase()) ||
     model.provider.toLowerCase().includes(modelSearch.toLowerCase())
-  );
+  ), [models, modelSearch]);
 
-  const filteredLoRAs = loras.filter(lora =>
+  const filteredLoRAs = useMemo(() => loras.filter(lora =>
     lora.name.toLowerCase().includes(loraSearch.toLowerCase()) ||
     (lora.tags && lora.tags.some(tag => tag.toLowerCase().includes(loraSearch.toLowerCase())))
-  );
+  ), [loras, loraSearch]);
 
   const handleLoRAToggle = (loraId: string) => {
     setSelectedLoRAs(prev =>
@@ -94,26 +117,39 @@ export default function GenerateImage() {
               onChange={(e) => setModelSearch(e.target.value)}
               className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="max-h-64 overflow-y-auto space-y-2">
-              {filteredModels.map((model) => (
-                <label key={model.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="model"
-                    value={model.id}
-                    checked={selectedModel === model.id}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    className="mr-3"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">{model.name}</div>
-                    <div className="text-sm text-gray-500">{model.provider} • {model.category}</div>
-                    {model.description && (
-                      <div className="text-sm text-gray-400 mt-1">{model.description}</div>
-                    )}
-                  </div>
-                </label>
-              ))}
+            <div className="overflow-y-auto" style={{ height: 256 }}>
+              <List
+                height={256}
+                itemCount={filteredModels.length}
+                itemSize={80}
+                width={"100%"}
+                itemKey={(index) => filteredModels[index].id}
+              >
+                {({ index, style }: ListChildComponentProps) => {
+                  const model = filteredModels[index];
+                  return (
+                    <div style={style}>
+                      <label className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="model"
+                          value={model.id}
+                          checked={selectedModel === model.id}
+                          onChange={(e) => setSelectedModel(e.target.value)}
+                          className="mr-3"
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{model.name}</div>
+                          <div className="text-sm text-gray-500">{model.provider} • {model.category}</div>
+                          {model.description && (
+                            <div className="text-sm text-gray-400 mt-1">{model.description}</div>
+                          )}
+                        </div>
+                      </label>
+                    </div>
+                  );
+                }}
+              </List>
             </div>
           </div>
         </div>
@@ -130,35 +166,48 @@ export default function GenerateImage() {
               onChange={(e) => setLoraSearch(e.target.value)}
               className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="max-h-96 overflow-y-auto space-y-2">
-              {filteredLoRAs.map((lora) => (
-                <label key={lora.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedLoRAs.includes(lora.id)}
-                    onChange={() => handleLoRAToggle(lora.id)}
-                    className="mr-3"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">{lora.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {lora.type} • {lora.category} • Strength: {lora.strength}
+            <div className="overflow-y-auto" style={{ height: 384 }}>
+              <List
+                height={384}
+                itemCount={filteredLoRAs.length}
+                itemSize={96}
+                width={"100%"}
+                itemKey={(index) => filteredLoRAs[index].id}
+              >
+                {({ index, style }: ListChildComponentProps) => {
+                  const lora = filteredLoRAs[index];
+                  return (
+                    <div style={style}>
+                      <label className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedLoRAs.includes(lora.id)}
+                          onChange={() => handleLoRAToggle(lora.id)}
+                          className="mr-3"
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{lora.name}</div>
+                          <div className="text-sm text-gray-500">
+                            {lora.type} • {lora.category} • Strength: {lora.strength}
+                          </div>
+                          {lora.description && (
+                            <div className="text-sm text-gray-400 mt-1">{lora.description}</div>
+                          )}
+                          {lora.tags && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {lora.tags.map((tag, index) => (
+                                <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </label>
                     </div>
-                    {lora.description && (
-                      <div className="text-sm text-gray-400 mt-1">{lora.description}</div>
-                    )}
-                    {lora.tags && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {lora.tags.map((tag, index) => (
-                          <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </label>
-              ))}
+                  );
+                }}
+              </List>
             </div>
           </div>
 

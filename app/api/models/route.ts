@@ -15,7 +15,7 @@ export async function GET() {
       const klingAPI = new KlingAPI();
 
       const [civitaiModels, replicateModels, klingModels] = await Promise.all([
-        civitaiAPI.getModels(15),
+        civitaiAPI.getModels(3000),
         replicateAPI.getModels(),
         klingAPI.getModels()
       ]);
