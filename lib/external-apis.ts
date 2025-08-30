@@ -122,15 +122,7 @@ export class CivitaiAPI {
         provider: 'Civitai',
         description: model.description?.replace(/<[^>]*>/g, '').substring(0, 200) || '',
         category,
-        version: latestVersion?.name || '1.0',
-        baseModel,
-        size: latestVersion?.files?.[0]?.sizeKB ? `${Math.round(latestVersion.files[0].sizeKB / 1024)}MB` : 'Unknown',
-        downloadCount: model.stats?.downloadCount || 0,
-        rating: model.stats?.rating || 0,
-        tags: [baseModel.toLowerCase(), category],
-        nsfw: model.nsfw || false,
-        commercial: model.allowCommercialUse?.includes('Image') || false,
-        source: 'civitai'
+        version: latestVersion?.name || '1.0'
       };
     });
   }
@@ -148,15 +140,11 @@ export class CivitaiAPI {
       return {
         id: lora.id.toString(),
         name: lora.name,
-        type: category as 'style' | 'character' | 'concept' | 'pose',
+        type: category,
         description: lora.description?.replace(/<[^>]*>/g, '').substring(0, 200) || '',
         strength: 0.8,
         category,
-        tags: [baseModel.toLowerCase(), category],
-        downloadCount: lora.stats?.downloadCount || 0,
-        rating: lora.stats?.rating || 0,
-        baseModel,
-        source: 'civitai'
+        tags: [baseModel.toLowerCase(), category]
       };
     });
   }
