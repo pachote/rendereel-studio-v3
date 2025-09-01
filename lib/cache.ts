@@ -1,23 +1,30 @@
 import { Model, LoRA } from './api-client';
 
-let kv: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let kvClient: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let sql: any = null;
 
-try {
-  if (process.env.VERCEL_KV_URL) {
-    kv = require('@vercel/kv').kv;
+async function initializeKV() {
+  try {
+    if (process.env.VERCEL_KV_URL && !kvClient) {
+      const { kv } = await import('@vercel/kv');
+      kvClient = kv;
+    }
+  } catch (error) {
+    console.warn('Vercel KV not available:', error);
   }
-} catch (error) {
-  console.warn('Vercel KV not available:', error);
 }
 
-try {
-  if (process.env.DATABASE_URL) {
-    const { neon } = require('@neondatabase/serverless');
-    sql = neon(process.env.DATABASE_URL);
+async function initializeSQL() {
+  try {
+    if (process.env.DATABASE_URL && !sql) {
+      const { neon } = await import('@neondatabase/serverless');
+      sql = neon(process.env.DATABASE_URL);
+    }
+  } catch (error) {
+    console.warn('Neon database not available:', error);
   }
-} catch (error) {
-  console.warn('Neon database not available:', error);
 }
 
 export class CacheService {
@@ -27,11 +34,13 @@ export class CacheService {
 
   static async getModels(): Promise<Model[] | null> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        const cached = await kv.get(this.MODELS_CACHE_KEY);
+      await initializeKV();
+      if (kvClient && process.env.VERCEL_KV_URL) {
+        const cached = await kvClient.get(this.MODELS_CACHE_KEY);
         if (cached) return cached;
       }
 
+      await initializeSQL();
       if (sql && process.env.DATABASE_URL) {
         const dbModels = await sql`
           SELECT * FROM cached_models 
@@ -40,7 +49,7 @@ export class CacheService {
         `;
         
         if (dbModels.length > 0) {
-          return dbModels.map((row: any) => JSON.parse(row.data));
+          return dbModels.map((row: { data: string }) => JSON.parse(row.data));
         }
       }
 
@@ -53,10 +62,12 @@ export class CacheService {
 
   static async setModels(models: Model[]): Promise<void> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        await kv.setex(this.MODELS_CACHE_KEY, this.CACHE_TTL, models);
+      await initializeKV();
+      if (kvClient && process.env.VERCEL_KV_URL) {
+        await kvClient.setex(this.MODELS_CACHE_KEY, this.CACHE_TTL, models);
       }
 
+      await initializeSQL();
       if (sql && process.env.DATABASE_URL) {
         await sql`
           INSERT INTO cached_models (key, data, updated_at)
@@ -72,11 +83,13 @@ export class CacheService {
 
   static async getLoRAs(): Promise<LoRA[] | null> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        const cached = await kv.get(this.LORAS_CACHE_KEY);
+      await initializeKV();
+      if (kvClient && process.env.VERCEL_KV_URL) {
+        const cached = await kvClient.get(this.LORAS_CACHE_KEY);
         if (cached) return cached;
       }
 
+      await initializeSQL();
       if (sql && process.env.DATABASE_URL) {
         const dbLoRAs = await sql`
           SELECT * FROM cached_loras 
@@ -85,7 +98,7 @@ export class CacheService {
         `;
         
         if (dbLoRAs.length > 0) {
-          return dbLoRAs.map((row: any) => JSON.parse(row.data));
+          return dbLoRAs.map((row: { data: string }) => JSON.parse(row.data));
         }
       }
 
@@ -98,10 +111,12 @@ export class CacheService {
 
   static async setLoRAs(loras: LoRA[]): Promise<void> {
     try {
-      if (kv && process.env.VERCEL_KV_URL) {
-        await kv.setex(this.LORAS_CACHE_KEY, this.CACHE_TTL, loras);
+      await initializeKV();
+      if (kvClient && process.env.VERCEL_KV_URL) {
+        await kvClient.setex(this.LORAS_CACHE_KEY, this.CACHE_TTL, loras);
       }
 
+      await initializeSQL();
       if (sql && process.env.DATABASE_URL) {
         await sql`
           INSERT INTO cached_loras (key, data, updated_at)
@@ -117,6 +132,7 @@ export class CacheService {
 
   static async initializeTables(): Promise<void> {
     try {
+      await initializeSQL();
       if (sql && process.env.DATABASE_URL) {
         await sql`
           CREATE TABLE IF NOT EXISTS cached_models (
