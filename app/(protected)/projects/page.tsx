@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { apiClient, Project } from "../../lib/api-client";
+import { apiClient, Project } from "../../../lib/api-client";
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -18,7 +18,7 @@ export default function Projects() {
       const response = await apiClient.getProjects();
       setProjects(response.data);
     } catch (error) {
-      console.error('Failed to fetch projects:', error);
+      console.error("Failed to fetch projects:", error);
     } finally {
       setLoading(false);
     }
@@ -34,7 +34,7 @@ export default function Projects() {
       setShowCreateForm(false);
       fetchProjects();
     } catch (error) {
-      console.error('Failed to create project:', error);
+      console.error("Failed to create project:", error);
     }
   };
 
@@ -147,3 +147,5 @@ export default function Projects() {
     </div>
   );
 }
+
+

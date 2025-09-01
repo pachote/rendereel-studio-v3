@@ -37,10 +37,13 @@ export async function GET() {
     console.error('Error fetching models:', error);
     
     const fallbackModels: Model[] = [
-      { id: 'flux-dev', name: 'Flux.1 [dev]', type: 'image', provider: 'Black Forest Labs', description: 'Advanced diffusion model', category: 'flux', version: '1.0' },
-      { id: 'sdxl-base', name: 'SDXL Base 1.0', type: 'image', provider: 'Stability AI', description: 'High-quality image generation', category: 'sdxl', version: '1.0' },
-      { id: 'kling-v1', name: 'Kling AI v1.0', type: 'video', provider: 'Kling', description: 'Video generation model', category: 'video', version: '1.0' },
-      { id: 'wan-2.2', name: 'Wan 2.2', type: 'image', provider: 'Community', description: 'Anime-style generation', category: 'anime', version: '2.2' }
+      { id: 'flux-sfw', name: 'Flux.1 SFW', type: 'image', provider: 'Black Forest Labs', description: 'Flux SFW', category: 'flux', version: '1.0' },
+      { id: 'flux-nsfw', name: 'Flux.1 NSFW', type: 'image', provider: 'Black Forest Labs', description: 'Flux NSFW', category: 'flux', version: '1.0' },
+      { id: 'sdxl-sfw', name: 'SDXL Base 1.0 SFW', type: 'image', provider: 'Stability AI', description: 'SDXL SFW', category: 'sdxl', version: '1.0' },
+      { id: 'sdxl-nsfw', name: 'SDXL Base 1.0 NSFW', type: 'image', provider: 'Stability AI', description: 'SDXL NSFW', category: 'sdxl', version: '1.0' },
+      { id: 'kling-v1.6', name: 'Kling AI v1.6', type: 'video', provider: 'Kling', description: 'Kling v1.6', category: 'video', version: '1.6' },
+      { id: 'kling-v2.1', name: 'Kling AI v2.1', type: 'video', provider: 'Kling', description: 'Kling v2.1', category: 'video', version: '2.1' },
+      { id: 'wan-2.2', name: 'WAN 2.2', type: 'video', provider: 'Wan', description: 'WAN 2.2 Video', category: 'video', version: '2.2' }
     ];
     
     return NextResponse.json({

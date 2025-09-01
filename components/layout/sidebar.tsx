@@ -4,11 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: "🏠" },
-  { name: "Generate Image", href: "/generate/image", icon: "🖼️" },
-  { name: "Generate Video", href: "/generate/video", icon: "🎬" },
-  { name: "Projects", href: "/projects", icon: "📁" },
-  { name: "Renders", href: "/renders", icon: "⚡" },
+  { name: "Dashboard", href: "/dashboard", icon: "🏠" },
+  { name: "Image Generation", href: "/generate/image", icon: "🖼️" },
+  { name: "Video Generation", href: "/generate/video", icon: "🎬" },
+  { name: "Assets", href: "/assets", icon: "📚" },
 ];
 
 export default function Sidebar() {

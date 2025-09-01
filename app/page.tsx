@@ -1,138 +1,73 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { apiClient, Project, Render } from "../lib/api-client";
+import Link from "next/link";
 
-export default function Home() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [renders, setRenders] = useState<Render[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [projectsResponse, rendersResponse] = await Promise.all([
-          apiClient.getProjects(),
-          apiClient.getRenders()
-        ]);
-        setProjects(projectsResponse.data);
-        setRenders(rendersResponse.data);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600">Loading dashboard...</div>
-      </div>
-    );
-  }
-
+export default function LandingPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome to Rendereel Studio V3</p>
-      </div>
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.12),transparent_35%),radial-gradient(circle_at_0%_100%,rgba(255,255,255,0.1),transparent_40%)]" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900">Projects</h3>
-          <p className="text-3xl font-bold text-blue-600 mt-2">{projects.length}</p>
-          <p className="text-sm text-gray-500 mt-1">Total projects</p>
-        </div>
+      <div className="relative z-10">
+        <header className="flex items-center justify-between px-6 py-5">
+          <div className="text-white font-bold text-lg">Rendereel Studio</div>
+          <div className="space-x-3">
+            <Link href="/auth/login" className="text-white/90 hover:text-white font-medium">Log in</Link>
+            <Link href="/auth/signup" className="inline-block bg-white text-purple-600 px-4 py-2 rounded-md font-semibold hover:bg-gray-100">Sign up</Link>
+          </div>
+        </header>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900">Renders</h3>
-          <p className="text-3xl font-bold text-green-600 mt-2">{renders.length}</p>
-          <p className="text-sm text-gray-500 mt-1">Total renders</p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900">Status</h3>
-          <p className="text-3xl font-bold text-purple-600 mt-2">Active</p>
-          <p className="text-sm text-gray-500 mt-1">System status</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Projects</h3>
-          {projects.length > 0 ? (
-            <div className="space-y-3">
-              {projects.slice(0, 5).map((project) => (
-                <div key={project.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <div>
-                    <p className="font-medium text-gray-900">{project.name}</p>
-                    <p className="text-sm text-gray-500">{project.description}</p>
-                  </div>
-                  <span className="text-xs text-gray-400">
-                    {new Date(project.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-              ))}
+        <main className="px-6">
+          <div className="max-w-5xl mx-auto text-center pt-10 pb-12">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight">
+              Create next‑level images and videos with AI
+            </h1>
+            <p className="mt-4 text-white/90 text-lg md:text-xl">
+              Flux and SDXL for images. Kling and WAN for video. One professional studio.
+            </p>
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <Link href="/auth/signup" className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100">
+                Get started
+              </Link>
+              <Link href="#features" className="text-white/90 hover:text-white font-medium">
+                Learn more →
+              </Link>
             </div>
-          ) : (
-            <p className="text-gray-500">No projects yet</p>
-          )}
-        </div>
+          </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Renders</h3>
-          {renders.length > 0 ? (
-            <div className="space-y-3">
-              {renders.slice(0, 5).map((render) => (
-                <div key={render.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <div>
-                    <p className="font-medium text-gray-900">Render {render.id}</p>
-                    <p className="text-sm text-gray-500">Project: {render.projectId}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                      render.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      render.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {render.status}
-                    </span>
-                    <p className="text-xs text-gray-400 mt-1">{render.progress}%</p>
-                  </div>
-                </div>
-              ))}
+          <section id="features" className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6 pb-16">
+            <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 border border-white/20">
+              <div className="text-3xl">🖼️</div>
+              <h3 className="mt-3 text-white text-xl font-semibold">AI Image Generation</h3>
+              <p className="mt-2 text-white/80 text-sm">
+                Forge‑style advanced controls with Negative Prompt, Samplers, Upscalers, ADetailer.
+              </p>
+              <Link href="/auth/signup" className="inline-block mt-4 text-white font-medium hover:underline">
+                Try image studio →
+              </Link>
             </div>
-          ) : (
-            <p className="text-gray-500">No renders yet</p>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg text-center transition-colors">
-            <div className="text-2xl mb-2">🖼️</div>
-            <p className="font-medium text-blue-900">Generate Image</p>
-          </button>
-          <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-center transition-colors">
-            <div className="text-2xl mb-2">🎬</div>
-            <p className="font-medium text-purple-900">Generate Video</p>
-          </button>
-          <button className="p-4 bg-green-50 hover:bg-green-100 rounded-lg text-center transition-colors">
-            <div className="text-2xl mb-2">📁</div>
-            <p className="font-medium text-green-900">New Project</p>
-          </button>
-          <button className="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg text-center transition-colors">
-            <div className="text-2xl mb-2">⚡</div>
-            <p className="font-medium text-orange-900">View Renders</p>
-          </button>
-        </div>
+            <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 border border-white/20">
+              <div className="text-3xl">🎬</div>
+              <h3 className="mt-3 text-white text-xl font-semibold">AI Video Creation</h3>
+              <p className="mt-2 text-white/80 text-sm">
+                Kling v1.6/v2.1 and WAN 2.2 with LoRA support in a pro‑grade interface.
+              </p>
+              <Link href="/auth/signup" className="inline-block mt-4 text-white font-medium hover:underline">
+                Try video studio →
+              </Link>
+            </div>
+            <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 border border-white/20">
+              <div className="text-3xl">📚</div>
+              <h3 className="mt-3 text-white text-xl font-semibold">Your Asset Library</h3>
+              <p className="mt-2 text-white/80 text-sm">
+                Manage prompts, LoRAs, outputs, and projects in one secure workspace.
+              </p>
+              <Link href="/auth/signup" className="inline-block mt-4 text-white font-medium hover:underline">
+                Explore assets →
+              </Link>
+            </div>
+          </section>
+        </main>
       </div>
     </div>
   );
