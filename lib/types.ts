@@ -37,7 +37,7 @@ export interface Project {
   updatedAt: string;
   status: 'draft' | 'active' | 'completed';
   modelId: string;
-  settings: Record<string, any>;
+  settings: Record<string, unknown>;
 }
 
 export interface Render {
@@ -47,7 +47,7 @@ export interface Render {
   negativePrompt?: string;
   modelId: string;
   loraIds: string[];
-  settings: Record<string, any>;
+  settings: Record<string, unknown>;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   imageUrl?: string;
   createdAt: string;

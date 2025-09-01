@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import { Project } from '../../../lib/types';
 
 // In-memory storage for development
-let projects: any[] = [];
+const projects: Project[] = [];
 
 export async function GET() {
   return NextResponse.json({
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
       success: true,
       data: newProject
     }, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({
       success: false,
       error: 'Failed to create project'

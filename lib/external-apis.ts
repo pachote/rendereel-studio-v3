@@ -42,12 +42,12 @@ interface ReplicateModel {
   paper_url: string;
   license_url: string;
   cover_image_url: string;
-  default_example: any;
+  default_example: Record<string, unknown>;
   latest_version: {
     id: string;
     created_at: string;
     cog_version: string;
-    openapi_schema: any;
+    openapi_schema: Record<string, unknown>;
   };
 }
 
@@ -189,14 +189,11 @@ export class ReplicateAPI {
       )
       .map(model => {
         let category = 'general';
-        let type = 'sd15';
         
         if (model.name.toLowerCase().includes('flux')) {
           category = 'flux';
-          type = 'flux';
         } else if (model.name.toLowerCase().includes('sdxl')) {
           category = 'sdxl';
-          type = 'sdxl';
         }
 
         return {
@@ -266,15 +263,22 @@ export class KlingAPI {
     ];
   }
 
-  private mapKlingModelsToInternal(klingModels: any[]): Model[] {
+  private mapKlingModelsToInternal(klingModels: Record<string, unknown>[]): Model[] {
     return klingModels.map((model, index) => ({
       id: `kling-${model.id || index}`,
-      name: model.name || `Kling Model ${index + 1}`,
+      name: (model.name as string) || `Kling Model ${index + 1}`,
       type: 'video',
       provider: 'Kling',
-      description: model.description || 'Kling AI video generation model',
+      description: (model.description as string) || 'Kling AI video generation model',
       category: 'video',
-      version: model.version || '1.0'
+      version: (model.version as string) || '1.0',
+      baseModel: 'kling',
+      size: 'unknown',
+      downloadCount: 0,
+      rating: 0,
+      tags: ['video', 'kling'],
+      nsfw: false,
+      commercial: true
     }));
   }
 }
