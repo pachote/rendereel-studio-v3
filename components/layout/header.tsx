@@ -2,16 +2,16 @@
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="sticky top-0 z-10 bg-black/40 backdrop-blur-sm border-b border-white/10">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-white">
               AI Generation Platform
             </h2>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+            <button className="px-4 py-2 rounded-md text-sm font-medium text-white bg-black/40 border border-white/10 hover:bg-black/60 transition-colors">
               New Project
             </button>
           </div>
