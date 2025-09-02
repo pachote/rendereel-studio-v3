@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { apiClient, Render } from "../../lib/api-client";
+import { apiClient, Render } from "../../../lib/api-client";
 
 export default function Renders() {
   const [renders, setRenders] = useState<Render[]>([]);
@@ -214,3 +214,5 @@ export default function Renders() {
     </div>
   );
 }
+
+

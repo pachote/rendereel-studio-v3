@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { apiClient, Model, LoRA } from "../../../lib/api-client";
+import { apiClient, Model, LoRA } from "@/lib/api-client";
 
 export default function GenerateVideo() {
   const [models, setModels] = useState<Model[]>([]);
@@ -18,15 +18,22 @@ export default function GenerateVideo() {
       try {
         const [modelsData, lorasData] = await Promise.all([
           apiClient.getModels(),
-          apiClient.getLoRAs()
+          apiClient.getLoRAs(),
         ]);
-        
-        const videoModels = modelsData.filter(model => model.type === 'video');
-        setModels(videoModels);
+
+        // Only allow Kling v1.6/v2.1 variants and WAN 2.2
+        const approved = modelsData.filter((m) => {
+          const name = (m.name || '').toLowerCase();
+          return (
+            name.includes('kling') && (name.includes('v1.6') || name.includes('v2.1'))
+          ) || name.includes('wan 2.2');
+        });
+
+        setModels(approved);
         setLoRAs(lorasData);
-        
-        if (videoModels.length > 0) {
-          setSelectedModel(videoModels[0].id);
+
+        if (approved.length > 0) {
+          setSelectedModel(approved[0].id);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -38,21 +45,29 @@ export default function GenerateVideo() {
     fetchData();
   }, []);
 
-  const filteredModels = models.filter(model =>
-    model.name.toLowerCase().includes(modelSearch.toLowerCase()) ||
-    model.provider.toLowerCase().includes(modelSearch.toLowerCase())
+  const filteredModels = models.filter(
+    (model) =>
+      model.name.toLowerCase().includes(modelSearch.toLowerCase()) ||
+      model.provider.toLowerCase().includes(modelSearch.toLowerCase())
   );
 
-  const filteredLoRAs = loras.filter(lora =>
-    lora.name.toLowerCase().includes(loraSearch.toLowerCase()) ||
-    (lora.tags && lora.tags.some(tag => tag.toLowerCase().includes(loraSearch.toLowerCase())))
-  );
+  const selectedModelName = models.find((m) => m.id === selectedModel)?.name?.toLowerCase() || "";
+  const filteredLoRAs = loras.filter((lora) => {
+    const matchesSearch =
+      lora.name.toLowerCase().includes(loraSearch.toLowerCase()) ||
+      (lora.tags && lora.tags.some((tag) => tag.toLowerCase().includes(loraSearch.toLowerCase())));
+    if (selectedModelName.includes('wan')) {
+      return matchesSearch && (lora.tags || []).some((t) => t.toLowerCase().includes('wan'));
+    }
+    if (selectedModelName.includes('kling')) {
+      return matchesSearch && (lora.tags || []).some((t) => t.toLowerCase().includes('kling'));
+    }
+    return matchesSearch;
+  });
 
   const handleLoRAToggle = (loraId: string) => {
-    setSelectedLoRAs(prev =>
-      prev.includes(loraId)
-        ? prev.filter(id => id !== loraId)
-        : [...prev, loraId]
+    setSelectedLoRAs((prev) =>
+      prev.includes(loraId) ? prev.filter((id) => id !== loraId) : [...prev, loraId]
     );
   };
 
@@ -67,8 +82,8 @@ export default function GenerateVideo() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Generate Video</h1>
-        <p className="text-gray-600 mt-2">Create amazing videos with AI models and LoRAs</p>
+        <h1 className="text-3xl font-bold text-gray-900">Video Studio</h1>
+        <p className="text-gray-600 mt-2">Kling and WAN 2.2 with LoRAs</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -85,7 +100,7 @@ export default function GenerateVideo() {
 
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Model Selection ({filteredModels.length} available)
+              Approved Models ({filteredModels.length})
             </h3>
             <input
               type="text"
@@ -193,13 +208,7 @@ export default function GenerateVideo() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Motion Intensity</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  defaultValue="5"
-                  className="w-full"
-                />
+                <input type="range" min="1" max="10" defaultValue="5" className="w-full" />
                 <div className="flex justify-between text-sm text-gray-500">
                   <span>Low</span>
                   <span>Medium</span>
@@ -217,3 +226,5 @@ export default function GenerateVideo() {
     </div>
   );
 }
+
+

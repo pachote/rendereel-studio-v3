@@ -23,10 +23,15 @@ export async function GET() {
     console.error('Error fetching LoRAs:', error);
     
     const fallbackLoRAs: LoRA[] = [
-      { id: 'anime-style', name: 'Anime Style', type: 'style', description: 'Anime art style enhancement', strength: 0.8, category: 'art-style', tags: ['anime', 'manga', 'japanese'] },
-      { id: 'photorealistic', name: 'Photorealistic', type: 'style', description: 'Photorealistic enhancement', strength: 0.7, category: 'realism', tags: ['photo', 'realistic', 'detailed'] },
-      { id: 'cyberpunk', name: 'Cyberpunk', type: 'theme', description: 'Cyberpunk aesthetic', strength: 0.9, category: 'theme', tags: ['cyberpunk', 'neon', 'futuristic'] },
-      { id: 'fantasy-art', name: 'Fantasy Art', type: 'style', description: 'Fantasy art style', strength: 0.8, category: 'art-style', tags: ['fantasy', 'magical', 'medieval'] }
+      // Flux SFW/NSFW
+      { id: 'flux-sfw-style', name: 'Flux SFW Style', type: 'style', description: 'Flux SFW style', strength: 0.8, category: 'flux', tags: ['flux', 'sfw'] },
+      { id: 'flux-nsfw-style', name: 'Flux NSFW Style', type: 'style', description: 'Flux NSFW style', strength: 0.8, category: 'flux', tags: ['flux', 'nsfw'] },
+      // SDXL SFW/NSFW
+      { id: 'sdxl-sfw-photoreal', name: 'SDXL Photoreal SFW', type: 'style', description: 'SDXL photoreal', strength: 0.7, category: 'sdxl', tags: ['sdxl', 'sfw'] },
+      { id: 'sdxl-nsfw-photoreal', name: 'SDXL Photoreal NSFW', type: 'style', description: 'SDXL photoreal NSFW', strength: 0.7, category: 'sdxl', tags: ['sdxl', 'nsfw'] },
+      // WAN 2.2 video LoRAs
+      { id: 'wan-2.2-sfw-motion', name: 'WAN 2.2 Motion SFW', type: 'motion', description: 'WAN motion sfw', strength: 0.6, category: 'wan', tags: ['wan 2.2', 'sfw'] },
+      { id: 'wan-2.2-nsfw-motion', name: 'WAN 2.2 Motion NSFW', type: 'motion', description: 'WAN motion nsfw', strength: 0.6, category: 'wan', tags: ['wan 2.2', 'nsfw'] }
     ];
     
     return NextResponse.json({
