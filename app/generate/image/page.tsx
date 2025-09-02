@@ -59,7 +59,7 @@ export default function GenerateImage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600">Loading models and LoRAs...</div>
+        <div className="text-lg text-gray-500">Loading models and LoRAs...</div>
       </div>
     );
   }
@@ -67,24 +67,24 @@ export default function GenerateImage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Generate Image</h1>
-        <p className="text-gray-600 mt-2">Create stunning images with AI models and LoRAs</p>
+        <h1 className="text-3xl font-bold text-white">Generate Image</h1>
+        <p className="text-gray-500 mt-2">Create stunning images with AI models and LoRAs</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Prompt</h3>
+          <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Prompt</h3>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe the image you want to generate..."
-              className="w-full h-32 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-32 p-3 bg-black/40 border border-white/10 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder:text-gray-500"
             />
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">
               Model Selection ({filteredModels.length} available)
             </h3>
             <input
@@ -92,11 +92,11 @@ export default function GenerateImage() {
               placeholder="Search models..."
               value={modelSearch}
               onChange={(e) => setModelSearch(e.target.value)}
-              className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 mb-4 bg-black/40 border border-white/10 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder:text-gray-500"
             />
             <div className="max-h-64 overflow-y-auto space-y-2">
               {filteredModels.map((model) => (
-                <label key={model.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                <label key={model.id} className="flex items-center p-3 border border-white/10 rounded-lg hover:bg-white/5 cursor-pointer">
                   <input
                     type="radio"
                     name="model"
@@ -106,8 +106,8 @@ export default function GenerateImage() {
                     className="mr-3"
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">{model.name}</div>
-                    <div className="text-sm text-gray-500">{model.provider} • {model.category}</div>
+                    <div className="font-medium text-white">{model.name}</div>
+                    <div className="text-sm text-gray-400">{model.provider} • {model.category}</div>
                     {model.description && (
                       <div className="text-sm text-gray-400 mt-1">{model.description}</div>
                     )}
@@ -119,8 +119,8 @@ export default function GenerateImage() {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">
               LoRA Selection ({selectedLoRAs.length} selected, {filteredLoRAs.length} available)
             </h3>
             <input
@@ -128,11 +128,11 @@ export default function GenerateImage() {
               placeholder="Search LoRAs..."
               value={loraSearch}
               onChange={(e) => setLoraSearch(e.target.value)}
-              className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 mb-4 bg-black/40 border border-white/10 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder:text-gray-500"
             />
             <div className="max-h-96 overflow-y-auto space-y-2">
               {filteredLoRAs.map((lora) => (
-                <label key={lora.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                <label key={lora.id} className="flex items-center p-3 border border-white/10 rounded-lg hover:bg-white/5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={selectedLoRAs.includes(lora.id)}
@@ -140,8 +140,8 @@ export default function GenerateImage() {
                     className="mr-3"
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">{lora.name}</div>
-                    <div className="text-sm text-gray-500">
+                    <div className="font-medium text-white">{lora.name}</div>
+                    <div className="text-sm text-gray-400">
                       {lora.type} • {lora.category} • Strength: {lora.strength}
                     </div>
                     {lora.description && (
@@ -150,7 +150,7 @@ export default function GenerateImage() {
                     {lora.tags && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {lora.tags.map((tag, index) => (
-                          <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          <span key={index} className="px-2 py-1 border border-blue-500/30 text-blue-400 text-xs rounded-full">
                             {tag}
                           </span>
                         ))}
@@ -162,12 +162,12 @@ export default function GenerateImage() {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Generation Settings</h3>
+          <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Generation Settings</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Width</label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <label className="block text-sm font-medium text-gray-300 mb-2">Width</label>
+                <select className="w-full p-2 bg-black/40 border border-white/10 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white">
                   <option value="512">512px</option>
                   <option value="768">768px</option>
                   <option value="1024" selected>1024px</option>
@@ -175,8 +175,8 @@ export default function GenerateImage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Height</label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <label className="block text-sm font-medium text-gray-300 mb-2">Height</label>
+                <select className="w-full p-2 bg-black/40 border border-white/10 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white">
                   <option value="512">512px</option>
                   <option value="768">768px</option>
                   <option value="1024" selected>1024px</option>
@@ -184,7 +184,7 @@ export default function GenerateImage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Steps</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Steps</label>
                 <input
                   type="range"
                   min="10"
@@ -192,7 +192,7 @@ export default function GenerateImage() {
                   defaultValue="50"
                   className="w-full"
                 />
-                <div className="flex justify-between text-sm text-gray-500">
+                <div className="flex justify-between text-sm text-gray-400">
                   <span>10</span>
                   <span>50</span>
                   <span>100</span>
@@ -201,7 +201,7 @@ export default function GenerateImage() {
             </div>
           </div>
 
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+          <button className="w-full text-white font-medium py-3 px-4 rounded-lg transition-colors bg-black/40 border border-white/10 hover:bg-black/60">
             Generate Image
           </button>
         </div>

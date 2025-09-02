@@ -2,7 +2,7 @@
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-10 bg-black/40 backdrop-blur-sm border-b border-white/10">
+    <header className="sticky top-0 z-10 bg-black/40 backdrop-blur-sm border-b border-white/10 ml-64">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">

@@ -41,7 +41,7 @@ export default function Projects() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600">Loading projects...</div>
+        <div className="text-lg text-gray-500">Loading projects...</div>
       </div>
     );
   }
@@ -50,38 +50,38 @@ export default function Projects() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-600 mt-2">Manage your AI generation projects</p>
+          <h1 className="text-3xl font-bold text-white">Projects</h1>
+          <p className="text-gray-500 mt-2">Manage your AI generation projects</p>
         </div>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          className="px-4 py-2 rounded-lg font-medium transition-colors text-white bg-black/40 border border-white/10 hover:bg-black/60"
         >
           New Project
         </button>
       </div>
 
       {showCreateForm && (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Project</h3>
+        <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Create New Project</h3>
           <form onSubmit={handleCreateProject} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Project Name</label>
               <input
                 type="text"
                 value={newProject.name}
                 onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-3 bg-black/40 border border-white/10 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder:text-gray-500"
                 placeholder="Enter project name..."
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
               <textarea
                 value={newProject.description}
                 onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-3 bg-black/40 border border-white/10 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder:text-gray-500"
                 placeholder="Enter project description..."
                 rows={3}
               />
@@ -89,14 +89,14 @@ export default function Projects() {
             <div className="flex space-x-3">
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                className="text-white px-4 py-2 rounded-md font-medium transition-colors bg-black/40 border border-white/10 hover:bg-black/60"
               >
                 Create Project
               </button>
               <button
                 type="button"
                 onClick={() => setShowCreateForm(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors"
+                className="text-gray-300 px-4 py-2 rounded-md font-medium transition-colors bg-black/20 border border-white/10 hover:bg-black/40"
               >
                 Cancel
               </button>
@@ -107,23 +107,23 @@ export default function Projects() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => (
-          <div key={project.id} className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow">
+          <div key={project.id} className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-black/70 transition-all">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
+              <h3 className="text-lg font-semibold text-white">{project.name}</h3>
               <span className="text-xs text-gray-400">
                 {new Date(project.createdAt).toLocaleDateString()}
               </span>
             </div>
-            <p className="text-gray-600 mb-4">{project.description}</p>
-            <div className="flex justify-between items-center text-sm text-gray-500">
+            <p className="text-gray-500 mb-4">{project.description}</p>
+            <div className="flex justify-between items-center text-sm text-gray-400">
               <span>ID: {project.id}</span>
               <span>Updated: {new Date(project.updatedAt).toLocaleDateString()}</span>
             </div>
             <div className="mt-4 flex space-x-2">
-              <button className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-3 rounded-md text-sm font-medium transition-colors">
+              <button className="flex-1 bg-black/40 border border-white/10 hover:bg-black/60 text-white py-2 px-3 rounded-md text-sm font-medium transition-all">
                 View Details
               </button>
-              <button className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 py-2 px-3 rounded-md text-sm font-medium transition-colors">
+              <button className="flex-1 bg-black/40 border border-white/10 hover:bg-black/60 text-white py-2 px-3 rounded-md text-sm font-medium transition-all">
                 Generate
               </button>
             </div>
@@ -134,12 +134,9 @@ export default function Projects() {
       {projects.length === 0 && (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">📁</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
+          <h3 className="text-lg font-medium text-white mb-2">No projects yet</h3>
           <p className="text-gray-500 mb-4">Create your first project to get started with AI generation</p>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
+          <button onClick={() => setShowCreateForm(true)} className="px-6 py-3 rounded-lg font-medium transition-colors text-white bg-black/40 border border-white/10 hover:bg-black/60">
             Create Your First Project
           </button>
         </div>
