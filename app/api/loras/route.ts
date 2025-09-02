@@ -1,37 +1,27 @@
 import { NextResponse } from 'next/server';
-import { CivitaiAPI } from '@/lib/external-apis';
-import { CacheService } from '@/lib/cache';
-import { LoRA } from '@/lib/api-client';
+import { CivitaiClient } from '@/lib/civitai';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    await CacheService.initializeTables();
+    const { searchParams } = new URL(request.url);
+    const base = (searchParams.get('base') || 'all').toLowerCase();
+    const category = (searchParams.get('category') || 'all').toLowerCase();
 
-    let loras = await CacheService.getLoRAs();
-    
-    if (!loras) {
-      const civitaiAPI = new CivitaiAPI();
-      loras = await civitaiAPI.getLoRAs(20);
-      await CacheService.setLoRAs(loras);
-    }
+    const client = new CivitaiClient();
 
-    return NextResponse.json({
-      success: true,
-      data: loras
+    const raw = await client.fetchAll({ types: 'LORA', perPage: 100, maxPages: 25 });
+    const mapped = client.mapLoRAs(raw);
+
+    const filtered = mapped.filter(l => {
+      const baseOk = base === 'all' ? true : (l.tags || []).some(t => t.toLowerCase().includes(base));
+      const cat = (l.category || '').toLowerCase();
+      const categoryMatch = category === 'all' ? true : cat === category;
+      return baseOk && categoryMatch;
     });
+
+    return NextResponse.json({ success: true, count: filtered.length, data: filtered });
   } catch (error) {
     console.error('Error fetching LoRAs:', error);
-    
-    const fallbackLoRAs: LoRA[] = [
-      { id: 'anime-style', name: 'Anime Style', type: 'style', description: 'Anime art style enhancement', strength: 0.8, category: 'art-style', tags: ['anime', 'manga', 'japanese'] },
-      { id: 'photorealistic', name: 'Photorealistic', type: 'style', description: 'Photorealistic enhancement', strength: 0.7, category: 'realism', tags: ['photo', 'realistic', 'detailed'] },
-      { id: 'cyberpunk', name: 'Cyberpunk', type: 'theme', description: 'Cyberpunk aesthetic', strength: 0.9, category: 'theme', tags: ['cyberpunk', 'neon', 'futuristic'] },
-      { id: 'fantasy-art', name: 'Fantasy Art', type: 'style', description: 'Fantasy art style', strength: 0.8, category: 'art-style', tags: ['fantasy', 'magical', 'medieval'] }
-    ];
-    
-    return NextResponse.json({
-      success: true,
-      data: fallbackLoRAs
-    });
+    return NextResponse.json({ success: false, error: 'Failed to fetch LoRAs' }, { status: 500 });
   }
 }
