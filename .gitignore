@@ -37,3 +37,4 @@ __pycache__/
 # IDE & OS specific
 .DS_Store
 .vscode/
+.vercel
