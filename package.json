@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0 --port 3000 --turbopack",
     "build": "next build --turbopack",
-    "start": "next start",
+    "start": "next start --hostname 0.0.0.0 --port 3000",
+    "start:8080": "next start --hostname 0.0.0.0 --port 8080",
     "lint": "eslint"
   },
   "dependencies": {
