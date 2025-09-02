@@ -7,6 +7,7 @@ export const config = {
     "/projects/:path*",
     "/renders/:path*",
     "/assets/:path*",
+    "/settings/:path*",
   ],
 };
 
